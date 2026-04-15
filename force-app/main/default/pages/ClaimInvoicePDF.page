@@ -1,0 +1,448 @@
+<apex:page standardController="Claim__c" extensions="ClaimInvoiceController" renderAs="pdf" showHeader="false" applyHtmlTag="false">
+    <html>
+        <head>
+            <style>
+                body { 
+                font-family: Arial, sans-serif; 
+                font-size: 12px; 
+                margin: 20px; 
+                }
+                
+                /* Table Layout */
+                .header-table {
+                width: 100%;
+                border-collapse: collapse;
+                }
+                
+                .header-table td {
+                vertical-align: top;
+                padding: 5px;
+                }
+                
+                /* Left Section - Company Details */
+                .company-details {
+                width: 50%;
+                }
+                
+                /* Right Section - Statement Details */
+                .statement-details {
+                width: 50%;
+                text-align: right;
+                }
+                
+                /* Statement Info Table */
+                .statement-table {
+                width: 100%;
+                margin-bottom: 10px;
+                }
+                
+                .statement-table th, .statement-table td {
+                padding: 6px;
+                text-align: center;
+                font-weight: bold;
+                }
+                
+                .statement-table th {
+                background-color: #0057c1;
+                color: white;
+                }
+                
+                .amount-due {
+                background-color: #d9534f;
+                color: white;
+                }
+                
+                /* Insurance Table */
+                .info-table { 
+                width: 100%;
+                }
+                
+                .info-table th, .info-table td { 
+                padding: 6px;
+                text-align: left;
+                }
+                
+                .info-table th { 
+                background-color: #0057c1;
+                color: white;
+                text-align: center;
+                }
+                
+                .info-table td:first-child {
+                font-weight: bold;
+                }
+                
+                /* Claim Line Items Table */
+                .claim-line-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                }
+                
+                .claim-line-table th, .claim-line-table td {
+                padding: 6px;
+                text-align: center;
+                border: 1px solid black;
+                }
+                
+                .claim-line-table th {
+                background-color: #0057c1;
+                color: white;
+                }
+                .total-row td {
+                border-top: 2px solid black !important; /* Top border */
+                border-bottom: 2px solid black !important; /* Bottom border */
+                font-weight: bold; /* Bold text */
+                background-color: #f2f2f2; /* Light grey background */
+                text-align: right; /* Align numbers to the right */
+                }
+                
+                /* Keeps left and right borders but removes inner borders */
+                .total-row td:not(:first-child):not(:last-child) {
+                border-left: none !important; 
+                border-right: none !important;
+                }
+                
+                /* Detach Line */
+                .detach-line {
+                border-top: 2px dashed black;
+                text-align: center;
+                margin: 20px 0;
+                padding-top: 10px;
+                font-weight: bold;
+                }
+                
+                /* Payment Stub Layout */
+                .payment-stub {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                }
+                
+                .payment-stub td {
+                vertical-align: top;
+                padding: 10px;
+                }
+                
+                /* Left Side - Statement Details */
+                .statement-info {
+                width: 50%;
+                border: 1px solid black;
+                }
+                
+                /* Right Side - Card Payment */
+                .card-payment {
+                width: 50%;
+                border: 1px solid black;
+                }
+                
+                .payment-table {
+                width: 100%;
+                border-collapse: collapse;
+                }
+                
+                .payment-table th, .payment-table td {
+                padding: 6px;
+                border: 1px solid black;
+                text-align: left;
+                }
+                
+                .payment-table th {
+                background-color: #0057c1;
+                color: white;
+                text-align: center;
+                }
+                
+                /* Make Check Payable Section */
+                .make-checks {
+                margin-top: 15px;
+                font-weight: bold;
+                text-align: center;
+                }
+                
+                .pay-now {
+                text-decoration: none;
+                font-weight: bold;
+                color: #0057c1;
+                font-size: 14px;
+                }
+            </style>
+        </head>
+        <body>
+            <table class="header-table">
+                <tr>
+                    <!-- Left - Company Details -->
+                    <td class="company-details">
+                        <!-- <apex:image url="{!$Resource.ArteraLogo}" width="200" height="60"/>   -->           
+                        <div>
+                            <b>Artera Inc.</b><br/>
+                            6800 Southpoint Pkwy Ste. 950<br/>
+                            Jacksonville, FL 32216-8203<br/>
+                            <!-- <b>Phone:</b> (650) 239-7018 <br/>
+<b>Email:</b> billing@artera.ai--> 
+                        </div>
+                        <br/>
+                        <br/>
+                        <apex:outputText value="{!Claim__c.Patient__r.Name}"/><br/>
+                        <apex:outputText value="{!Claim__c.Patient__r.BillingStreet}"/><br/>
+                        <apex:outputText value="{!Claim__c.Patient__r.BillingCity}, {!Claim__c.Patient__r.BillingState}, {!Claim__c.Patient__r.BillingPostalCode}"/><br/>
+                        <apex:outputText value="{!Claim__c.Patient__r.BillingCountry}"/>
+                        <!--<div style="font-weight: bold; font-size:12px; color:#0057c1; margin-top:5px;">Scan to Pay</div>
+<div style="margin-top:10px; text-align:left;">
+<apex:image url="{!'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=' + IF(BEGINS(Claim__c.Payment_Link__c, 'http'), Claim__c.Payment_Link__c, 'https://' + Claim__c.Payment_Link__c)}" width="80" height="80" alt="Payment QR Code"/>
+</div>
+<div class="well" style="word-break: break-all; text-align:left; margin-top: 10px;">
+<a href="{!IF(Claim__c.Payment_Link__c != null, IF(BEGINS(Claim__c.Payment_Link__c, 'http'), Claim__c.Payment_Link__c, 'https://' + Claim__c.Payment_Link__c), '')}" target="_blank" class="pay-now">pay now</a>
+</div>
+{!IF(Claim__c.Payment_Link__c != null, IF(BEGINS(Claim__c.Payment_Link__c, 'http'), Claim__c.Payment_Link__c, 'https://' + Claim__c.Payment_Link__c), '')}--->
+                        
+                    </td>
+                    
+                    <!-- Right - Statement Details -->
+                    <td class="statement-details">
+                        <table class="statement-table">
+                            <tr>
+                                <th>Statement Date:</th>
+                                <th class="amount-due">Amount Due:</th>
+                                <th>Statement #:</th>
+                            </tr>
+                            <tr>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!TODAY()}"/></apex:outputText></td>
+                                <td class="amount-due"><apex:outputText value="{!totalAmountDue}"/></td>
+                                <td>{!Claim__c.Statement_Number__c}</td>
+                            </tr>
+                        </table>
+                        <!-- Insurance Details -->
+                        <table class="info-table">
+                            <tr>
+                                <th colspan="3">Most Recent Insurance Claim Filed To:</th>
+                            </tr>
+                            <tr>
+                                <td style="width:40%">Patient: </td>
+                                <td style="text-align: left;width:40% ">{!Claim__c.Patient__r.Name}</td>
+                                <td style="width:40%"></td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%">Insurance:</td>
+                                <td style="text-align: left;width:40% ">{!Claim__c.Opportunity__r.Payer__r.Name}</td>
+                                <td style="width:40%"></td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%">Subscriber:</td>
+                                <td style="text-align: left;width:40% ">{!memberPlanSubscriber}</td>
+                                <td style="width:40%"></td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%">Ordering Provider:</td>
+                                <td style="text-align: left;width:40% ">{!Claim__c.Opportunity__r.Sales_Order__r.Contact__r.Name}</td>
+                                <td style="width:40%"></td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%">Encounter:</td>
+                                <td style="text-align: left;width:40% ">{!Claim__c.Name}</td>
+                                <td style="width:40%"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- Claim Line Items Table -->
+            <table class="claim-line-table">
+                <tr>
+                    <th>Date of Service</th>
+                    <th>CPT</th>
+                    <th>Description</th>
+                    <th>Charge</th>
+                    <th>Adjustment</th>
+                    <th>Insurance Paid</th>
+                    <th>Patient Paid</th>
+                    <th>Balance</th>
+                </tr>
+                <apex:repeat value="{!claimLines}" var="cl">
+                    <tr>
+                        <td>{!formattedDates[cl.Id]}</td>
+                        <td>{!cl.CPT_HCPCS__c}</td>
+                        <td>ArteraAI Prostate Test</td>
+                        <td>{!cl.Total_Price__c}</td>
+                        <td>{!cl.Adj_Amount__c}</td>
+                        <td>{!cl.Opportunity_Product__r.Payment_By_Insurance__c}</td>
+                        <td>{!cl.Opportunity_Product__r.Payment_By_Patient__c}</td>
+                        <td>{!cl.Balance__c}</td>
+                    </tr>
+                </apex:repeat>
+                <tr class="total-row">
+                    <td style="text-align: left;"><b>Total</b></td>
+                    <td style="border: none; border: none;"></td>
+                    <td style="border: none;"></td>
+                    <td style="text-align: center;"><apex:outputText value="${!totalCharge}"/></td>
+                    <td style="text-align: center;"><apex:outputText value="${!totalAdjustment}"/></td>
+                    <td style="text-align: center;"><apex:outputText value="${!totalInsurancePaid}"/></td>
+                    <td style="text-align: center;"><apex:outputText value="${!totalPatientPaid}"/></td>
+                    <td style="text-align: center;"><apex:outputText value="${!totalBalance}"/></td>
+                </tr>
+                
+            </table>
+            <br/>
+            <!-- Balance Due Message -->
+            <div class="balance-due">
+                BALANCE DUE UPON RECEIPT - If you have concerns about paying your balance, then please contact us to discuss payment options or financial assistance.Call us at 650-239-7018 or email us at billing@artera.ai
+            </div>
+            
+            <apex:outputPanel layout="block"
+                              rendered="{!AND(NOT(ISNULL(Claim__c.Payment_Link__c)), LEN(TRIM(Claim__c.Payment_Link__c)) > 0)}">
+                
+                <table style="width:100%; margin-top:15px;">
+    <tr>
+
+        <!-- Scan to Pay -->
+        <td style="width:33%; vertical-align:top;">
+            <div style="padding-top:5px; text-align:left;">
+                <div style="font-weight:bold;
+                            font-size:12px;
+                            line-height:14px;
+                            color:#0057c1;">
+                    Scan to Pay
+                </div>
+
+                <div style="margin-top:6px;">
+                    <apex:image url="{!'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=' +
+                             IF(BEGINS(Claim__c.Payment_Link__c, 'http'),
+                             Claim__c.Payment_Link__c,
+                             'https://' + Claim__c.Payment_Link__c)}"
+                        style="width:80px; height:80px;"
+                        alt="Payment QR Code"/>
+                </div>
+            </div>
+        </td>
+
+        <!-- Financial Assistance -->
+        <td style="width:33%; vertical-align:top;">
+            <apex:outputPanel rendered="{!Claim__c.Payer__r.Name != 'Self Pay'}">
+                <div style="padding-top:5px; text-align:left;">
+                    <div style="font-weight:bold;
+                                font-size:12px;
+                                line-height:14px;
+                                color:#0057c1;">
+                        Financial Assistance
+                    </div>
+
+                    <div style="margin-top:6px;">
+                        <apex:image url="{!URLFOR($Resource.FinancialAssistanceQR)}"
+                            style="width:95px; height:95px;"
+                            alt="Financial Assistance QR"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </td>
+
+        <!-- Pay Now -->
+        <td style="width:33%; text-align:right; vertical-align:middle;">
+            <a href="{!IF(BEGINS(Claim__c.Payment_Link__c, 'http'), 
+                     Claim__c.Payment_Link__c, 
+                     'https://' + Claim__c.Payment_Link__c)}"
+               target="_blank"
+               style="font-weight:bold; color:#0057c1; text-decoration:none;">
+                pay now
+            </a>
+            <div>
+                {!IF(BEGINS(Claim__c.Payment_Link__c, 'http'), 
+                Claim__c.Payment_Link__c, 
+                'https://' + Claim__c.Payment_Link__c)}
+            </div>
+        </td>
+
+    </tr>
+</table>
+
+                
+                
+            </apex:outputPanel>
+            
+            
+            
+            <div class="detach-line"> ─────────────────── Please Detach Here ─────────────────── </div>
+            
+            
+            <!-- Left Side - Statement Info -->
+            <td class="statement-details">
+                <table class="statement-table">
+                    <tr>
+                        <th>Statement Date:</th>
+                        <th class="amount-due">Amount Due:</th>
+                        <th>Statement #:</th>
+                    </tr>
+                    <tr>
+                        <td><apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!TODAY()}"/></apex:outputText></td>
+                        <td class="amount-due"><apex:outputText value="{!totalAmountDue}"/></td>
+                        <td>{!Claim__c.Statement_Number__c}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: left; padding-left: 40px;">
+                            <strong>Artera Inc.</strong><br/>
+                            P.O. Box 1073<br/>
+                            Brattleboro, VT 05302-1073<br/><br/>
+                            <br/><br/>
+                            
+                            <!-- Timothy Windsor<br/>
+2 City Pl<br/>
+Nashville, TN 37209-2505-->
+                            
+                            <apex:outputText value="{!Claim__c.Patient__r.Name}"/><br/>
+                            <apex:outputText value="{!Claim__c.Patient__r.BillingStreet}"/><br/>
+                            <apex:outputText value="{!Claim__c.Patient__r.BillingCity}, {!Claim__c.Patient__r.BillingState}, {!Claim__c.Patient__r.BillingPostalCode}"/><br/>
+                            <apex:outputText value="{!Claim__c.Patient__r.BillingCountry}"/> 
+                        </td>
+                        
+                    </tr>
+                </table>
+            </td>
+            
+            <!-- Right Side - Credit Card Payment -->
+            <td >
+                <table class="payment-table" style="border-radius:10px;margin-bottom:27%; border-collapse:separate; border-left: 2px solid black; border-right: 2px solid black; border-bottom: 2px solid black; width: 100%;     border:solid black 1px;
+                                                    border-collapse: collapse;">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 5px;">
+                            <apex:image url="{!$Resource.VisaLogo}" width="50" height="20" style="margin-right: 20px;"/>
+                            <apex:image url="{!$Resource.MasterCardLogo}" width="50" height="20" style="margin-right: 20px;"/>
+                            <apex:image url="{!$Resource.DiscoverLogo}" width="50" height="20" style="margin-right: 20px;"/>
+                            <apex:image url="{!$Resource.AmexLogo}" width="50" height="20" style="margin-right:0;"/>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="border-top: 1px solid black; border-left: 1px solid black; border-right: 1px solid black; padding: 5px;">Card Holder Name:</td>
+                    </tr>
+                    
+                    <tr>
+                        <td colspan="4" style="border-left: 1px solid black; border-right: 1px solid black; padding: 5px;">Card Number:</td>
+                    </tr>
+                    
+                    <!-- Expiration Date, CCV, and Statement Number -->
+                    <tr>
+                        <td style="border: 1px solid black; padding: 5px; width: 30%;">Expiration Date: <span>MM / YY</span></td>
+                        <td style="border: 1px solid black; padding: 5px; width: 15%;">CCV:</td>
+                        <td style="border: 1px solid black; padding: 5px; width: 25%;">Statement #:</td>
+                        <td style="border: 1px solid black; padding: 5px; width: 30%;"><b style="color: blue;"></b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border-left: 1px solid black; padding: 5px;">Signature:</td>
+                        <td colspan="2" style="border-right: 1px solid black; padding: 5px;">Payment Amount: $</td>
+                    </tr>
+                    
+                </table>
+            </td>
+            
+            <tr>
+                <td></td>
+                <td style="vertical-align: top; padding-top: 0px; line-height: 1;">
+                    MAKE CHECK(S) PAYABLE/REMIT TO<br />
+                    Artera Inc.,<br />
+                    P.O. Box 1073,<br />
+                    Brattleboro, VT 05302-1073
+                </td>
+            </tr>
+        </body>
+    </html>
+</apex:page>

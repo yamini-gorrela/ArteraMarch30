@@ -1,0 +1,566 @@
+<template>
+    
+    <lightning-quick-action-panel>
+        <!-- <template lwc:if={isBalanceZero}> -->
+        <template if:true={openWarningMsg}>
+            <div class="" style="position: absolute; width: 100%;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="max-width: 40rem !important; width: 50% !important;">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeWarningModel}></button>
+                        <div class="slds-modal__header" style="height: 50px;">
+                            <h1 id="modal-heading-001" class="slds-modal__title slds-hyphenate">Warning!</h1>
+                        </div> 
+                        <div class="slds-card">
+                            
+                        <h1 style="color:red; text-align:center; height: 50px; font-size: 20px; padding-top: 10px;">You have crossed your UnAllocation Limit</h1>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" name="unallocatedlimit" aria-label="Ok" onclick={closeWarningModel}>Ok</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" ></div>
+            </div>
+        </template>
+        <template if:true={openWarningAlloacte}>
+            <div class="" style="position: absolute; width: 100%;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="max-width: 40rem !important; width: 50% !important;">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeWarningModel}></button>
+                        <div class="slds-modal__header" style="height: 50px;">
+                            <h1 id="modal-heading-002" class="slds-modal__title slds-hyphenate">Warning!</h1>
+                        </div> 
+                        <div class="slds-card">
+                            
+                        <h1 style="color:red; text-align:center; height: 50px; font-size: 20px; padding-top: 10px;">Allocated amount exceeded the balance. Kindly verify</h1>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" aria-label="Ok" onclick={closeWarningModel}>Ok</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" ></div>
+            </div>
+        </template>
+        <template if:true={openClaimSelected}>
+            <div class="" style="position: absolute; width: 100%;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="max-width: 40rem !important; width: 50% !important;">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeWarningModel}></button>
+                        <div class="slds-modal__header" style="height: 50px;">
+                            <h1 id="modal-heading-003" class="slds-modal__title slds-hyphenate">Warning!</h1>
+                        </div> 
+                        <div class="slds-card">
+                            
+                        <h1 style="color:red; text-align:center; height: 50px; font-size: 20px; padding-top: 10px;">ClaimLine is Already Selected</h1>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" aria-label="Ok" onclick={closeWarningModel}>Ok</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" ></div>
+            </div>
+        </template>
+    <lightning-card > 
+        
+        <div slot="title">
+            <lightning-icon icon-name="custom:custom42" size="medium"></lightning-icon>
+            <span class="slds-p-left_small" style="float:right ;">
+                <p style="color:silver;font-size:15px;">PAYMENT ALLOCATION</p>
+                <p if:true={PaymentName} style="color:#60569b;font-size:18px;">{PaymentName}</p>
+            </span>
+            
+            
+        </div> 
+        
+            <div class="spinner">
+                <template if:true={isLoaded}>
+                     <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                     </lightning-spinner>
+                </template>
+            </div>
+            <lightning-button variant="Neutral" label="Clear Allocation" title="Clear Allocation" onclick={handleClearALL} slot="actions" class="slds-p-right_small"></lightning-button>
+        <lightning-button variant="Neutral" label="Cancel" title="Cancel" onclick={handleCancel} slot="actions" class="slds-p-right_small"></lightning-button>
+        <lightning-button variant="Brand" label="Allocate" title="Allocate" onclick={handleAllocate} slot="actions" disabled={disabled}></lightning-button>  
+        
+    <!-- <div class="slds-scrollable"> -->
+        <div class="slds-text-heading_small  slds-p-left_small slds-p-vertical_xxx-small slds-text-color_inverse" style="background-color:steelblue; height:30px;">Payment</div>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table" style="width:100%;">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="Payer">PAYER NAME</div>
+                </th>
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="PayerType">PAYER TYPE</div>
+                </th>
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="Amount">AMOUNT</div>
+                </th>
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="Allocation">ALLOCATION</div>
+                </th>
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="Unallocation">UNALLOCATION</div>
+                </th>
+                <th class="" scope="col"  style="width: 20%">
+                    <div class="slds-truncate" title="Balance">BALANCE</div>
+                </th> 
+            </tr>
+        </thead>
+        <tbody>
+           <template for:each={paymentlist} for:item="rowVisit" for:index="indexChild">
+                <tr key={rowVisit.index} class="slds-hint-parent">
+                    <template if:true={payername}>
+                    <td data-label="Payer">
+                        <div if:true={rowVisit.Payer__c} class="slds-truncate" title="Payer">{rowVisit.Payer__r.Name}</div>
+                    </td>
+                    </template>
+                    <template if:true={patientname}>
+                        <td data-label="Payer">
+                            <div if:true={rowVisit.Patient__c} class="slds-truncate" title="Payer">{rowVisit.Patient__r.Name}</div>
+                        </td>
+                        </template>
+                        <template if:true={attorneyname}>
+                            <td data-label="Payer">
+                                <div if:true={rowVisit.Attorney__c} class="slds-truncate" title="Payer">{rowVisit.Attorney__r.Name}</div>
+                            </td>
+                            </template>
+                    <template if:true={patientvalue}>
+                    <td data-label="PayerType">
+                        <div if:true={rowVisit.Patient__c} class="slds-truncate" title="Payer">Patient</div>
+                    </td>
+                    </template>
+                    <template if:true={attorneyvalue}>
+                    <td data-label="PayerType">
+                        <div if:true={rowVisit.Attorney__c} class="slds-truncate" title="Payer">Attorney</div>
+                    </td>
+                    </template>
+                    <template if:true={payervalue}>
+                    <td data-label="PayerType">
+                        <div if:true={rowVisit.Payer__c} class="slds-truncate" title="Payer">Payer</div>
+                    </td>
+                    </template>
+                    <td data-label="Amount">
+                        <div if:true={rowVisit.Amount__c} class="slds-truncate" title="Amount">${rowVisit.Amount__c}</div>
+                        <div if:false={rowVisit.Amount__c} class="slds-truncate" title="Amount">$0</div>
+                    </td>
+                  <td data-label="Allocation">
+                        <div if:true={rowVisit.Allocation__c} class="slds-truncate" title="Allocation">${rowVisit.Allocation__c}</div>
+                        <div if:false={rowVisit.Allocation__c} class="slds-truncate" title="Allocation">$0</div>
+
+                    </td>
+                    <td data-label="Unallocation">
+                        <div if:true={rowVisit.Unallocation__c} class="slds-truncate" title="Unallocation">${rowVisit.Unallocation__c}</div>
+                        <div if:false={rowVisit.Unallocation__c} class="slds-truncate" title="Unallocation">$0</div>
+
+                    </td>
+                    <td data-label="Balance">
+                        <div if:true={rowVisit.Balance__c} class="slds-truncate" title="Balance">${rowVisit.Balance__c}</div>
+                        <div if:false={rowVisit.Balance__c} class="slds-truncate" title="Balance">$0</div>
+
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    <br>
+    <!-- </div> -->
+    <div class="slds-grid slds-grid_align-spread slds-p-around_medium">
+        <div>
+            <button onclick={handleAllocateClick} class="slds-button slds-button_brand" disabled={disableButton}>Allocate Proportionally</button>
+        </div>
+        <div>
+            <button onclick={handleAdjustBalance} class="slds-button slds-button_brand">Adjust Balance</button>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col">
+            <div class="slds-grid slds-gutters">
+                <!-- <div class="slds-col" style= "padding:5px">
+                    <lightning-input type="search" label="  " placeholder="Search"  onchange={handleSearch}></lightning-input>
+                </div> -->
+                <div class="slds-col">
+                    <lightning-combobox name="progress" label="Category" value={selectedValue} options={categoryTypeOptions} onchange={handlecategoryChange}></lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <c-customlookup name="accountName" field-label="GL Account" child-object-api-name="AcctSeed__Journal_Entry_Line__c" target-field-api-name="AcctSeed__GL_Account__c" value={glAccountId} add-to-recent="true" onvalueselected={handleSelectedLookup}></c-customlookup>
+                </div>
+                <div class="slds-col">
+                    <lightning-input label="Additional Amount" name="Additional Amount" value={additionalAmount} onchange={handleChangeAdditionalAmount} class="slds-input_small"></lightning-input>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="slds-col">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <lightning-combobox name="progress" label="Category" value={selectedValue} options={categoryTypeOptions} onchange={handlecategoryChange}></lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <c-customlookup name="accountName" field-label="GL Account" child-object-api-name="AcctSeed__Journal_Entry_Line__c" target-field-api-name="AcctSeed__GL_Account__c" value={glAccountId} add-to-recent="true" onvalueselected={handleSelectedLookup}></c-customlookup>
+                </div>
+                <div class="slds-col">
+                    <lightning-input label="Additional Amount" name="Additional Amount" value={additionalAmount} onchange={handleChangeAdditionalAmount} class="slds-input_small"></lightning-input>
+                </div>
+            </div>
+        </div> -->
+    </div>
+    
+    
+    
+    
+    
+    
+        <div class="slds-text-heading_small  slds-p-left_small slds-p-vertical_xxx-small slds-text-color_inverse" style="background-color:steelblue; height:30px;">Claim Lines</div>
+        <!-- <template if:true={showpatientInHeader}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table" style="width:100%; width:100%">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Select">Select</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Claim">Patient</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Claim">Claim</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Claim Line">Claim Line</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Total Amount">Total Amount</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Payments">Payments</div>
+                    </th> 
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Balance">Balance</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Current Payments">Current Payments</div>
+                    </th>
+                    <th  class="" scope="col" >
+                        <div class="slds-truncate" title="Balance transferred to">Balance transferred to</div>
+                    </th>
+                </tr>
+            </thead>
+        </table>  
+        </template> -->
+        <template if:true={showpatientInHeader}>
+            <div style="height: 500px; overflow-y: scroll;">
+                <div class="table-wrapper">
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table fixed-header-table" style="width:100%;">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col" >
+                        <lightning-input type="checkbox" checked={selectAllChecked} onchange={handleSelectAll}></lightning-input>
+                    </th>
+                    <!-- <th class="" scope="col" >
+                        Select                    
+                    </th> -->
+                    <th class="" scope="col"  >
+                        Patient                    
+                    </th>
+                    <th class="" scope="col" >
+                        Claim                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Claim Line                    
+                    </th>
+                   
+                    <th class="" scope="col"  >
+                        Treatment Location                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Service Date                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Total Amount                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Allowed Amount                   
+                     </th>
+                    <th class="" scope="col"  >
+                        Adj. Amount                    
+                    </th>
+                    <th class="" scope="col" >
+                        Payments                    
+                    </th> 
+                    <th class="" scope="col"  >
+                        Balance                    
+                    </th>
+                     <!-- <th class="" scope="col"  >
+                        Final Balance	                   
+                    </th> -->
+                    <th class="" scope="col"  >
+                        Current Payments                    
+                    </th>
+                   
+                    <th  class="" scope="col" >
+                        Balance transferred to                    
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            <template for:each={claimLinesList} for:item="rowVisit" for:index="indexChild">
+                <tr key={rowVisit.index} class="slds-hint-parent" if:true={rowVisit.isSearch}>
+                    <td data-label="Select"  style="width: 5%">
+                        <lightning-input type="checkbox" checked={rowVisit.IsChecked} value={rowVisit.IsChecked} name={indexChild} onchange={handleSelect}></lightning-input>
+                        </td>
+                        <td data-label="Patient" style="width: 15%">
+                            <div if:true={rowVisit.Patient} class="slds-truncate" title="Patient">{rowVisit.Patient}</div>
+                        </td>
+                    <td data-label="Claim" style="width: 15%">
+                        <div if:true={rowVisit.Claim} class="slds-truncate" title="Claim">{rowVisit.Claim}</div>
+                    </td>
+                    <td data-label="Claim Line" style="width: 19%">
+                        <div class="slds-truncate" title="Claim Line">{rowVisit.ClaimLine}</div>
+                    </td>
+                   
+                    <td data-label="Treatment Location" >
+                        <div class="slds-truncate" title="Treatment Location">{rowVisit.treatmentloaction}</div>
+                    </td>
+                    <td data-label="Service Date" >
+                        <div class="slds-truncate" title="Service Date">{rowVisit.scheduledateString}</div>
+                    </td>
+                    <td data-label="Total Amount" style="width: 16%">
+                        <div if:true={rowVisit.TotalAmount} class="slds-truncate" title="Total Amount">${rowVisit.TotalAmount}</div>
+                    </td>
+                    <td data-label="AllowedAmount" >
+                        <lightning-input type="number" step="0.0001" name={indexChild} value={rowVisit.AllowedAmount} onchange={handlechangedAllowAmount}></lightning-input>                  
+                </td>
+                    <td data-label="Adj.Amount">
+                        <div if:true={rowVisit.AdjAmount} class="slds-truncate" title="AdjAmount">${rowVisit.AdjAmount}</div>
+                    </td>
+                    <td data-label="Payments" style="width: 8%">
+                        <div if:true={rowVisit.Payments} class="slds-truncate" title="Payments">${rowVisit.Payments}</div>
+                        <div if:false={rowVisit.Payments} class="slds-truncate" title="Payments">$0</div>
+
+                    </td>
+                    <td data-label="Balance"  style="width: 10%">
+                        <div if:true={rowVisit.Balance} class="slds-truncate" title="Balance">${rowVisit.Balance}</div>
+                        <div if:false={rowVisit.Balance} class="slds-truncate" title="Balance">$0</div>
+
+                    </td>
+                     <!-- <td data-label="Final Balance" style="width: 12%">
+                        <lightning-input
+                        type="text"
+                        name={indexChild}
+                        value={rowVisit.OverriddenBalance} maxlength="8"
+                        onchange={handleOverBalance}  style = "width: 80%;"></lightning-input>
+                    </td> -->
+                     <td data-label="Current Payments" style="width: 12%">
+                        <lightning-input
+                        type="text"
+                        name={indexChild}
+                        value={rowVisit.Amount} maxlength="8"
+                        onchange={handleAmount}  style = "width: 80%;"></lightning-input>
+                    </td>
+                   
+                    <td>
+                        <lightning-combobox
+                        name={indexChild}
+                        value={rowVisit.BalanceTransferredTo}
+                        placeholder="Balance transferred to"
+                        options={options}
+                        onchange={handleBalncTransferedPicklist} ></lightning-combobox>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    </div>
+    </div>
+    </template>
+    <!-- <template if:true={showInsuranceInHeader}>
+         
+        
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table" style="width:100%; ">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col" >
+                        Select                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Patient                    
+                    </th>
+                    <th class="" scope="col" >
+                        Claim                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Claim Line                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Total Amount                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Allowed Amount                   
+                     </th>
+                    <th class="" scope="col"  >
+                        Adj. Amount                    
+                    </th>
+                    <th class="" scope="col" >
+                        Payments                    
+                    </th> 
+                    <th class="" scope="col"  >
+                        Balance                    
+                    </th>
+                    <th class="" scope="col"  >
+                        Current Payments                    
+                    </th>
+                    <th  class="" scope="col" >
+                        Balance transferred to                    
+                    </th>
+                </tr>
+            </thead>
+        </table>
+        
+        </template>
+     -->
+    <template if:true={showInsuranceInHeader}>
+            <div style="height: 500px; width:100%; overflow-y: scroll;">
+
+ <div class="table-wrapper">
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table fixed-header-table" style="width:100%;">                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col" >
+                            Select                    
+                        </th>
+                        <th class="" scope="col"  >
+                            Patient                    
+                        </th>
+                        <th class="" scope="col" >
+                            Claim                    
+                        </th>
+                        <th class="" scope="col"  >
+                            Claim Line                    
+                        </th>
+                       
+                        <th class="" scope="col"  >
+                            Treatment Location                    
+                        </th>
+                        <th class="" scope="col"  >
+                            Service Date                    
+                        </th>
+                        <th class="" scope="col"  >
+                            Total Amount                    
+                        </th>
+                        <th class="" scope="col"  >
+                            Allowed Amount                   
+                         </th>
+                        <th class="" scope="col"  >
+                            Adj. Amount                    
+                        </th>
+                        <th class="" scope="col" >
+                            Payments                    
+                        </th> 
+                        <th class="" scope="col"  >
+                            Balance                    
+                        </th>
+                        <!-- <th class="" scope="col"  >
+                           Final Balance	                   
+                        </th> -->
+                        <th class="" scope="col"  >
+                            Current Payments                    
+                        </th>
+                         
+                        <th  class="" scope="col" >
+                            Balance transferred to                    
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <template for:each={claimLinesList} for:item="rowVisit" for:index="indexChild" >
+                    <tr key={rowVisit.index} class="slds-hint-parent"  if:true={rowVisit.isSearch}>
+                        <td data-label="Select" >
+                            <lightning-input type="checkbox" checked={rowVisit.IsChecked} value={rowVisit.IsChecked} name={indexChild} onchange={handleSelect}></lightning-input>
+                        </td>
+                        <td data-label="Patient">
+                            <div if:true={rowVisit.Patient} class="slds-truncate" title="Patient">{rowVisit.Patient}</div>
+                        </td>
+                        <td data-label="Claim">
+                            <div if:true={rowVisit.Claim} class="slds-truncate" title="Claim">{rowVisit.Claim}</div>
+                        </td>
+                        <td data-label="Claim Line" >
+                            <div class="slds-truncate" title="Claim Line">{rowVisit.ClaimLine}</div>
+                        </td>
+                        <td data-label="Treatment Location" >
+                            <div class="slds-truncate" title="Treatment Location">{rowVisit.treatmentloaction}</div>
+                        </td>
+                        <td data-label="Service Date" >
+                            <div class="slds-truncate" title="Service Date">{rowVisit.scheduledateString}</div>
+                        </td>
+                        <td data-label="Total Amount" >
+                            <div if:true={rowVisit.TotalAmount} class="slds-truncate" title="Total Amount">${rowVisit.TotalAmount}</div>
+                        </td>
+                        <td data-label="AllowedAmount" >
+                            <lightning-input type="number" step="0.0001" name={indexChild} value={rowVisit.AllowedAmount} onchange={handlechangedAllowAmount}></lightning-input>
+                        </td>
+                        <td data-label="Adj.Amount">
+                            <div if:true={rowVisit.AdjAmount} class="slds-truncate" title="AdjAmount">${rowVisit.AdjAmount}</div>
+                        </td>
+                        <td data-label="Payments" >
+                            <div if:true={rowVisit.Payments} class="slds-truncate" title="Payments">${rowVisit.Payments}</div>
+                            <div if:false={rowVisit.Payments} class="slds-truncate" title="Payments">$0</div>
+
+                        </td>
+                        <td data-label="Balance" >
+                            <div if:true={rowVisit.Balance} class="slds-truncate" title="Balance">${rowVisit.Balance}</div>
+                            <div if:false={rowVisit.Balance} class="slds-truncate" title="Balance">$0</div>
+
+                        </td>
+                         <!-- <td data-label="Final Balance" style="width: 12%">
+                        <lightning-input
+                        type="text"
+                        name={indexChild}
+                        value={rowVisit.OverriddenBalance} maxlength="8"
+                        onchange={handleOverBalance}  style = "width: 80%;"></lightning-input>
+                    </td> -->
+                        <td data-label="Current Payments" >
+                            <lightning-input
+                            type="text"
+                            name={indexChild}
+                            value={rowVisit.Amount} maxlength="8"
+                            onchange={handleAmount} ></lightning-input>
+                        </td>
+                       
+                        <td  >
+                            <lightning-combobox
+                            name={indexChild}
+                            value={rowVisit.BalanceTransferredTo}
+                            placeholder="Balance transferred to"
+                            options={options}
+                            onchange={handleBalncTransferedPicklist}  style = "width: 100%;" ></lightning-combobox>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+            </table>
+            
+        </div>
+        </div>
+    </template>
+    <br><br>
+    <!-- </div> -->
+    
+    </lightning-card>
+
+<!-- </template> -->
+
+<!-- <template lwc:else> 
+    <lightning-card >
+       
+        <p class="slds-p-horizontal_small slds-text-color_error" style="font-size: 20px; font-weight: bold;">Cannot Allocate using this Payment as the Balance is 0</p>
+       
+    </lightning-card>
+</template> -->
+</lightning-quick-action-panel>  
+
+
+</template>

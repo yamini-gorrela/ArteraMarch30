@@ -1,0 +1,51 @@
+<apex:page standardController="Payment__c"
+           extensions="PaymentPdfLauncherController"
+           showHeader="false"
+           sidebar="false">
+    
+    <div id="msgBox" style="text-align:center; margin-top:120px; font-size:18px; font-family:Arial;">
+        <b>Generating PDF... Please wait</b>
+    </div>
+    
+    <script>
+    window.onload = function() {
+        
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.PaymentPdfLauncherController.generate}',
+            '{!Payment__c.Id}',
+            function(result, event){
+                
+                if(event.status && result){
+                    
+                    if(result.success){
+                        
+                        // ✅ SUCCESS
+                        document.getElementById('msgBox').innerHTML =
+                            '<span style="color:green;"><b>' + result.message + '</b></span>';
+                        
+                        window.open('/sfc/servlet.shepherd/document/download/' + result.documentId, '_blank');
+                        
+                    } else {
+                        
+                        // ❌ NO DATA / ERROR
+                        document.getElementById('msgBox').innerHTML =
+                            '<span style="color:red;"><b>' + result.message + '</b></span>';
+                    }
+                    
+                } else {
+                    
+                    document.getElementById('msgBox').innerHTML =
+                        '<span style="color:red;"><b>Unexpected error occurred.</b></span>';
+                }
+                
+                setTimeout(function(){
+                    window.location.href = '/' + '{!Payment__c.Id}';
+                }, 2000);
+                
+            }
+        );
+        
+    };
+    </script>
+    
+</apex:page>

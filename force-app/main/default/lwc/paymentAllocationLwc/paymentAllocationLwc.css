@@ -1,0 +1,42 @@
+/* .slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+     white-space: break-spaces; 
+} */
+.table-wrapper {
+    max-height: 400px; /* You can adjust the height */
+    overflow-y: auto;
+    position: relative;
+}
+
+.fixed-header-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f3f3f3; /* Match SLDS header background */
+    z-index: 2;
+}
+
+.slds-modal__container{
+    width: 120% !important;
+    max-width: 120% !important;
+    
+} 
+.custom-button {
+    background-color: blue;
+  }
+
+
+  .slds-modal__content{
+    max-height: 514px !important;
+    width: 120% !important;
+    max-width: 120% !important;
+  }
+  
+  .slds-col .slds-form-element__icon{
+    display: none;
+  }
+  
+  .customLookup .slds-form-element__icon{
+    display: none !important;
+  }

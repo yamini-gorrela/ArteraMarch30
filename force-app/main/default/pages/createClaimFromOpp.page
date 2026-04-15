@@ -1,0 +1,173 @@
+<apex:page standardController="Opportunity" lightningStylesheets="true" recordSetVar="conditions" extensions="createClaimFromOppContoller">
+    <apex:form id="formId">
+        <script>
+        function showToast() {
+            var toastVal = '{!toastValue}';
+            if(toastVal === 'true'){
+                sforce.one.showToast({
+                    "title": "Success!",
+                    "message": "Claims created successfully",
+                    "type": "success"
+                });
+                methodOneInJavascript();
+            }
+            else{
+                sforce.one.showToast({
+                    "title": "Error!",
+                    "message": "Claims not created",
+                    "type": "error"
+                });
+            }
+        }
+        </script>
+        <style>
+            .custom-h1 {
+            font-size: .8125rem!important; 
+            }
+            .message{
+            background-color: rgb(116, 116, 116)!important;
+            background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.025) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.025) 50%, rgba(0, 0, 0, 0.025) 75%, transparent 75%, transparent);
+            background-size: 4rem 4rem;
+            position: relative;
+            display: -webkit-inline-box;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            margin: 0.75rem 0!important;
+            border: 0 !important;
+            padding: 0.5rem!important;
+            width: 100%;
+            font-size: .8125rem!important;
+            font-weight: 300;
+            text-align: center;
+            color: rgb(255, 255, 255);
+            }       
+            .msgIcons{
+            background-image: url(/apexpages/slds/latest/assets/icons/utility/info.svg) !important;
+            height: 1rem !important;
+            display: inline-block;
+            margin-top: 1px!important;
+            margin-right: 0.75rem!important;
+            padding: 0 !important;
+            vertical-align: middle;
+            background-position: center;
+            background-size: cover; 
+            }
+        </style>
+        <apex:pageBlock title="">
+            <apex:pageMessages /> 
+            <apex:outputPanel rendered="{!errorValue}">
+                <div class = "message">
+                    <img alt="INFO" class="msgIcons" src="/s.gif" title="INFO"/> {!errorMsg} 
+                </div>
+            </apex:outputPanel>
+            <apex:slds />
+            <apex:outputPanel rendered="{!!hidenulllist}">
+                <div style="text-align: center;">
+                    <h1  style="color:red; font-size: 16px; text-align: center;font-weight: bold">Records  does  not  match  Criteria  to  Create  Claims</h1>
+                </div> 
+                
+                <div style="margin-top: 20px;"></div>
+                <!-- output panel open-->
+                <table  class="slds-table slds-table--bordered">
+                    <tr class="slds-text-heading--label slds-theme_shade">
+                        <th>Opportunity Name</th>
+                        <th>Record Type</th>
+                        <th>Status</th>
+                        <th>Payer</th>
+                        <th>Provider</th>
+                        <th>Subscriber</th>
+                        <th>Location</th>
+                        <!-- <th>Clinical Encounter</th>-->
+                        <th>Service Date</th>
+                    </tr>
+                    <apex:repeat value="{!nullopplist}" var="a" >
+                        <tr class="slds-text-body_regular">
+                            <td>{!a.Name}</td> 
+                            <td>{!a.RecordType.Name}</td>
+                            <td>{!a.Status__c}</td>
+                            <td>{!a.Payer__r.name}</td>
+                            <td>{!a.Provider__r.Name}</td>
+                            <td>{!a.Subscriber__r.Name}</td>
+                            <td>{!a.Location__r.Name}</td>
+                            <!--<td>{!a.Clinical_Encounter__r.Name}</td>-->
+                            <td >
+                                <apex:outputText value="{0,date,dd' 'MMM' 'yyyy}">
+                                    <apex:param value="{!a.Service_Date__c}" /> 
+                                </apex:outputText>
+                                
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </apex:outputPanel>
+            <div style="margin-top: 20px;"></div>
+            <apex:outputPanel rendered="{!!hidenewlist}">
+                <div style="text-align: center;">
+                    
+                    <h1 style="color:blue;font-size: 16px;text-align:center;font-weight: bold ">Records  ready  to  Created  as  Claims</h1>
+                </div>
+                <div style="margin-top: 20px;"></div>
+                <table  class="slds-table slds-table--bordered">
+                    <tr class="slds-text-heading--label slds-theme_shade">
+                        <th>Opportunity Name</th>
+                        <th>Record Type</th>
+                        <th>Status</th>
+                        <th>Payer</th>
+                        <th>Provider</th>
+                        <th>Subscriber</th>
+                        <th>Location</th>
+                        <!--<th>Clinical Encounter</th>-->
+                        <th>Service Date</th>
+                    </tr>
+                    <apex:repeat value="{!newOppList}" var="a" >
+                        <tr class="slds-text-body_regular">
+                            <td>{!a.Name}</td> 
+                            <td>{!a.RecordType.Name}</td>
+                            <td>{!a.Status__c}</td>
+                            <td>{!a.Payer__r.name}</td>
+                            <td>{!a.Provider__r.Name}</td>
+                            <td>{!a.Subscriber__r.Name}</td>
+                            <td>{!a.Location__r.Name}</td>
+                            <!--<td>{!a.Clinical_Encounter__r.Name}</td>-->
+                            <td>
+                                <apex:outputText value="{0,date,dd' 'MMM' 'yyyy}">
+                                    <apex:param value="{!a.Service_Date__c}" /> 
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </apex:outputPanel>
+            <div style="margin-top: 20px;"></div>
+            
+            
+            <apex:actionStatus id="pageStatus">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px;  width: 125px;">
+                            <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                        </div>
+                    </div>        
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:actionFunction action="{!methodOne}" name="methodOneInJavascript" rerender="showstate">
+            </apex:actionFunction>
+            <apex:pageBlockButtons location="bottom">
+                <apex:outputPanel rendered="{!!hideButton}" >
+                    <apex:commandButton value="Confirm to Create" action="{!createClaims}" status="pageStatus" oncomplete="showToast();" rerender="formId" style="margin-right: 10px" />
+                </apex:outputPanel>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

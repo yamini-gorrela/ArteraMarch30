@@ -1,0 +1,30 @@
+/* .slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+     white-space: break-spaces; 
+} */
+
+.slds-modal__container{
+    width: 120% !important;
+    max-width: 120% !important;
+    
+} 
+.custom-button {
+    background-color: blue;
+  }
+
+
+  .slds-modal__content{
+    max-height: 514px !important;
+    width: 120% !important;
+    max-width: 120% !important;
+  }
+  
+  .slds-col .slds-form-element__icon{
+    display: none;
+  }
+  
+  .customLookup .slds-form-element__icon{
+    display: none !important;
+  }

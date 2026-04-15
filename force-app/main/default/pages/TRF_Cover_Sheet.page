@@ -1,0 +1,46 @@
+<apex:page standardController="Sales_Order__c" renderAs="pdf">
+    <!-- Header Section with Inline CSS -->
+    <div style="text-align: left; margin-bottom: 20px;">
+        <div style="text-align: center;">
+            <apex:image url="{!URLFOR($Resource.Logo)}" width="200" />
+        </div>
+    </div>
+
+    <!-- Main Content Section with Inline CSS -->
+    <div style="margin-top: 20px; text-align: left;">
+        <p style="margin: 0;"><strong>FAX:</strong> 650-231-6899</p>
+        <p style="margin: 0;"><strong>PHONE:</strong> 650-239-7018</p>
+        <p style="margin: 0;"><strong>DATE:</strong> {!TEXT(MONTH(TODAY())) + '/' + TEXT(DAY(TODAY())) + '/' + TEXT(YEAR(TODAY()))}</p>
+
+        <p style="margin-top: 20px;"><strong>TO:</strong> {!Sales_Order__c.Pathology_Lab__r.Name}</p>
+        <p style="margin: 0;"><strong>FAX:</strong> {!Sales_Order__c.Pathology_Lab__r.Fax}</p>
+        <p style="margin: 0;"><strong>PHONE:</strong> {!Sales_Order__c.Pathology_Lab__r.Phone}</p>
+        <p style="margin: 0;"><strong>SUBJECT:</strong> ArteraAI Prostate Test - Patient Slide Request Order # {!Sales_Order__c.Portal_Ticket__c}</p>
+
+        <p style="margin-top: 20px;"><strong>COMMENTS:</strong> Hello, a clinician caring for a patient whose tissue specimen is at your lab has ordered an ArteraAI Prostate Test for their patient, kindly provide the following:</p>
+
+        <p style="margin: 0;">Please send 1 (one) H&amp;E slide from Part {!Sales_Order__c.Highest_Gleason_Score_and_Part__c}, (Accession # / Case #) {!Sales_Order__c.Pathology_Ascension_Number__c}.</p>
+
+        <p style="margin-top: 20px;">Please include the TRF and patient’s pathology report inside the Artera Kit (Kit will be delivered to your facility on or before {!TEXT(MONTH(TODAY() + 2)) + '/' + TEXT(DAY(TODAY() + 2)) + '/' + TEXT(YEAR(TODAY() + 2))}).</p>
+
+        <p style="margin-top: 20px;"><strong>Please ship to:</strong><br/>
+        Artera Inc<br/>
+        6800 Southpoint Pkwy<br/>
+        STE 950<br/>
+        Jacksonville, FL 32216</p>
+
+        <p style="margin-top: 20px;">If the H&amp;E Slide(s) are unavailable:</p>
+        <ul style="margin-left: 20px;">
+            <li>Please send an unexhausted block with a frozen ice pack in the Artera kit to prevent melting during shipping.</li>
+        </ul>
+    </div>
+
+    <!-- Footer Section with Inline CSS -->
+    <div style="margin-top: 40px; text-align: left;">
+        <p>If you have any questions or concerns about missing information regarding this request, please reach out to support@artera.ai.</p>
+
+        <p style="margin-top: 20px;"><strong>INFO:</strong> The ArteraAI Prostate Test is an artificial intelligence-derived biomarker test that is designed to support risk-based clinical decisions for patients with localized prostate cancer. The test is based upon the analysis of digital histopathology images (from H&amp;E-stained slides or FFPE blocks) and specific clinical variables provided by the ordering clinician. The subsequent test report summarizes a patient's risk of distant metastasis and prostate cancer-specific mortality rate, as well as the predicted magnitude of benefit of treatment with androgen-deprivation therapy for patients who are being considered for treatment with radiation therapy.</p>
+
+        <p style="margin-top: 20px;"><strong>NOTICE:</strong> This facsimile transmission contains confidential information, some or all of which may be protected health information as defined by the federal Health Insurance Portability &amp; Accountability Act (HIPAA) privacy rule. It is intended for the exclusive use of the individual or entity to whom it is addressed. If you are not the intended recipient (or an employee or agent responsible for delivering this facsimile transmission to the intended recipient), you are hereby notified that any disclosure, dissemination, distribution, or copying of this information is strictly prohibited and may be subject to legal restriction or sanction. Please notify the sender by telephone immediately at the number listed above to arrange for the return or destruction of the information.</p>
+    </div>
+</apex:page>

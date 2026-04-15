@@ -1,0 +1,12 @@
+.slds-modal__container{
+    width: 90% !important;
+    max-width: 150% !important;
+    .slds-modal {
+        position: relative;
+        top: 20%; /* Adjust the top value as needed */
+    }
+    
+    .slds-modal__content{
+        max-height: 100% !important;
+      }
+}

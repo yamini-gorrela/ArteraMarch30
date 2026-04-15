@@ -1,0 +1,31 @@
+<template>
+    <lightning-quick-action-panel>
+    <lightning-card  class="centered-card">
+        <div class="custom-header">
+                <h1 style="color: black; background-color: #f4f4f4;  padding: 10px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 20px;">Payment Refund Process</h1>
+            </div>
+<div class="slds-p-around_small" style="font-size: 14px; max-width: 400px;">
+    <lightning-input label="Refund Amount" type="currency" value={refundamount} onchange={handleAmountChange} required></lightning-input>
+            <lightning-input label="Reason for Refund" value={refundreason} onchange={handleNoteChange} required></lightning-input>
+            
+        </div>
+       
+
+       <footer class="slds-modal__footer slds-grid slds-grid_align-end">
+    <lightning-button 
+        variant="brand" 
+        label="Save" 
+        onclick={handleSave} 
+        class="slds-m-right_small">
+    </lightning-button>
+    
+    <lightning-button 
+        variant="neutral" 
+        label="Cancel" 
+        onclick={handlecancel}>
+    </lightning-button>
+</footer>
+
+    </lightning-card>
+    </lightning-quick-action-panel>
+</template>

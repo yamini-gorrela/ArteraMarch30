@@ -1,0 +1,76 @@
+<apex:page standardController="Claim__c" 
+    extensions="CMS1500Controller" 
+    action="{!generate}"
+    showHeader="false" 
+    sidebar="false">
+
+    <apex:form >
+
+        <!-- ✅ SUCCESS TOAST -->
+        <apex:outputPanel rendered="{!isSuccess}">
+            <div class="toast toast-success" id="successToast">
+                CMS 1500 form generated successfully
+            </div>
+
+            <script>
+                // Show toast and fade out
+                setTimeout(function(){
+                    var toast = document.getElementById('successToast');
+                    toast.style.opacity = 0;
+                    setTimeout(function(){
+                        toast.remove(); // Remove from DOM
+                        window.location.href = '/' + '{!$CurrentPage.parameters.id}';
+                    }, 1000); // fade-out duration
+                }, 2000); // show for 3 seconds
+            </script>
+        </apex:outputPanel>
+
+        <!-- ❌ ERROR TOAST -->
+        <apex:outputPanel rendered="{!AND(NOT(isSuccess), NOT(ISBLANK(errorMessage)))}">
+            <div class="toast toast-error" id="errorToast">
+                {!errorMessage}
+            </div>
+
+            <script>
+                setTimeout(function(){
+                    var toast = document.getElementById('errorToast');
+                    toast.style.opacity = 0;
+                    setTimeout(function(){
+                        toast.remove();
+                        window.location.href = '/' + '{!$CurrentPage.parameters.id}';
+                    }, 1000);
+                }, 3000);
+            </script>
+        </apex:outputPanel>
+
+        <style>
+            .toast {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: 300px;
+                max-width: 400px;
+                padding: 15px 25px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                font-size: 14px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                opacity: 1;
+                transition: opacity 1s ease-in-out;
+                z-index: 9999;
+            }
+
+            .toast-success {
+                background-color: #2e844a;
+            }
+
+            .toast-error {
+                background-color: #c23934;
+            }
+        </style>
+
+    </apex:form>
+</apex:page>
