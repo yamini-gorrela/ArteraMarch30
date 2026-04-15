@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Appeal_reason__c</fullName>
+    <label>Appeal reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Record request</fullName>
+                <default>false</default>
+                <label>Record request</label>
+            </value>
+            <value>
+                <fullName>Clinical appeal</fullName>
+                <default>false</default>
+                <label>Clinical appeal</label>
+            </value>
+            <value>
+                <fullName>Payment dispute</fullName>
+                <default>false</default>
+                <label>Payment dispute</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
