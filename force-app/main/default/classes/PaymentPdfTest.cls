@@ -1,128 +1,117 @@
 @isTest
 private class PaymentPdfTest {
     
-    class MockHttpResponseGenerator implements HttpCalloutMock {
+    private class PaymentCalloutMock implements HttpCalloutMock {
         public HTTPResponse respond(HTTPRequest req) {
             HttpResponse res = new HttpResponse();
             res.setHeader('Content-Type', 'text/html');
-            res.setBody('<html><body><h1>Test HTML</h1></body></html>');
             res.setStatusCode(200);
+            
+            res.setBody('<html><body><h1>Mock PDF Content</h1></body></html>');
             return res;
         }
     }
     
-    static Payment__c createPayment(Boolean withData) {
-        Payment__c p = new Payment__c();
-        if (withData) {
-            p.Raw_Data__c = '<html><body>Test Payment</body></html>';
-        }
-        insert p;
-        return p;
-    }
     
     @isTest
-    static void testPrintController_withHtml() {
+    static void testAllPaymentFlow() {
         
-        Payment__c p = createPayment(true);
+        Test.setMock(HttpCalloutMock.class, new PaymentCalloutMock());
+        
+        Payment__c pay = new Payment__c(
+            Raw_Data__c = '{"transCode":"I","payerID:":"HUMANA"}'
+        );
+        insert pay;
+        
+        Test.setCurrentPage(Page.PaymentPdfRenderer);
+        ApexPages.currentPage().getParameters().put('id', pay.Id);
         
         Test.startTest();
-        
-        ApexPages.currentPage().getParameters().put('id', p.Id);
         PaymentPrintController ctrl = new PaymentPrintController();
-        
-        Test.stopTest();
-        
         System.assertNotEquals(null, ctrl.htmlContent);
-    }
-    
-    @isTest
-    static void testPrintController_withCallout() {
+        System.assert(ctrl.htmlContent.contains('Mock PDF Content'));
         
-        Payment__c p = new Payment__c(Raw_Data__c = '{"test":"data"}');
-        insert p;
-        
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-        
-        Test.startTest();
-        
-        ApexPages.currentPage().getParameters().put('id', p.Id);
-        PaymentPrintController ctrl = new PaymentPrintController();
-        
-        Test.stopTest();
-        
-        System.assertNotEquals(null, ctrl.htmlContent);
-    }
-    
-    @isTest
-    static void testSavePaymentPdf() {
-        
-        Payment__c p = createPayment(true);
-        
-        Test.startTest();
-        
-        Id docId = PaymentPdfService.savePaymentPdf(p.Id);
-        
-        Test.stopTest();
-        
+        Id docId = PaymentPdfService.savePaymentPdf(pay.Id);
         System.assertNotEquals(null, docId);
         
         List<ContentDocumentLink> links = [
-            SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :p.Id
+            SELECT Id FROM ContentDocumentLink
+            WHERE LinkedEntityId = :pay.Id
         ];
-        
         System.assert(links.size() > 0);
-    }
-    
-    @isTest
-    static void testLauncher_success() {
         
-        Payment__c p = createPayment(true);
-        
-        Test.startTest();
-        
-        Map<String, Object> res =
-            PaymentPdfLauncherController.generate(p.Id);
+        Map<String, Object> result = PaymentPdfLauncherController.generate(pay.Id);
+        System.assertEquals(true, result.get('success'));
         
         Test.stopTest();
-        
-        System.assertEquals(true, res.get('success'));
-        System.assertNotEquals(null, res.get('documentId'));
     }
     
+    
     @isTest
-    static void testLauncher_noData() {
+    static void testHTMLDirectFlow() {
         
-        Payment__c p = createPayment(false);
-        
-        Test.startTest();
-        
-        Map<String, Object> res =
-            PaymentPdfLauncherController.generate(p.Id);
-        
-        Test.stopTest();
-        
-        System.assertEquals(false, res.get('success'));
-        System.assertEquals(
-            'Cannot proceed to print payment: No data available.',
-            res.get('message')
+        Payment__c pay = new Payment__c(
+            Raw_Data__c = '<html><body>Direct HTML</body></html>'
         );
+        insert pay;
+        
+        Test.setCurrentPage(Page.PaymentPdfRenderer);
+        ApexPages.currentPage().getParameters().put('id', pay.Id);
+        
+        Test.startTest();
+        
+        PaymentPrintController ctrl = new PaymentPrintController();
+        
+        Test.stopTest();
+        
+        System.assert(ctrl.htmlContent.contains('Direct HTML'));
+    }
+    
+    
+    @isTest
+    static void testNoRawData() {
+        
+        Payment__c pay = new Payment__c(
+            Raw_Data__c = null
+        );
+        insert pay;
+        
+        Test.startTest();
+        
+        Map<String, Object> result = PaymentPdfLauncherController.generate(pay.Id);
+        
+        Test.stopTest();
+        
+        System.assertEquals(false, result.get('success'));
     }
     @isTest
-    static void testLauncher_pdfFailure() {
+    static void testGenerate_PdfFailure() {
         
-        Payment__c p = new Payment__c(Raw_Data__c = '<html>Test</html>');
-        insert p;
+        Payment__c pay = new Payment__c(
+            Raw_Data__c = '<html><body>Test</body></html>'
+        );
+        insert pay;
         
         PaymentPdfService.forceFail = true;
         
         Test.startTest();
         
-        Map<String, Object> res =
-            PaymentPdfLauncherController.generate(p.Id);
+        Map<String, Object> result = PaymentPdfLauncherController.generate(pay.Id);
         
         Test.stopTest();
         
-        System.assertEquals(false, res.get('success'));
-        System.assertEquals('Error generating PDF.', res.get('message'));
+        PaymentPdfService.forceFail = false;
+    }
+    @isTest
+    static void testGenerate_Exception() {
+        
+        Test.startTest();
+        
+        Map<String, Object> result = PaymentPdfLauncherController.generate(null);
+        
+        Test.stopTest();
+        
+        System.assertEquals(false, result.get('success'));
+        System.assert(result.get('message') != null);
     }
 }

@@ -189,7 +189,7 @@ public class MiddlewareUtilsTest {
     }
     @isTest
     public static void getClaimBodyTest(){
-        Claim__c claim = [Select Id,Submitter_Id__c,Referring_Provider_Type__c,Referring_Provider_Name__c,Referring_Provider_First_Name__c,Referring_Provider_Address_Street__c,Referring_Provider_Address_City__c,Referring_Provider_Address_State__c,Referring_Provider_Address_Zip_Code__c,Referring_Provider_Phone__c,Referring_Provider_Taxonomy_code__c,Referring_Provider_NPI__c,CASESAFEID__c,Name,Patient_Condition_Related_to_auto_state__c,
+        Claim__c claim = [Select Id,CreatedDate,Submitter_Id__c,Referring_Provider_Type__c,Referring_Provider_Name__c,Referring_Provider_First_Name__c,Referring_Provider_Address_Street__c,Referring_Provider_Address_City__c,Referring_Provider_Address_State__c,Referring_Provider_Address_Zip_Code__c,Referring_Provider_Phone__c,Referring_Provider_Taxonomy_code__c,Referring_Provider_NPI__c,CASESAFEID__c,Name,Patient_Condition_Related_to_auto_state__c,
         Innovalan_Reference_Id__c,Casualty__c,X16_Unable_to_work_from__c,Accept_Assignment__c,(Select Id,Claim__r.Rendering_Provider_Type__c,Claim__r.Rendering_Provider_Name__c,Rendering_Provider_ID_TaxonomyCode__c, Rendering_Provider_ID_NPI__c,Diag_1__c,Diag_2__c,Diag_3__c,Diag_4__c,Diag_5__c,Diag_6__c,
             Diagnosis_pointers__c,Modifier_s__c,Date_from_of_Service__c,Date_to_of_Service__c,Place_of_Service__c,CPT_HCPCS__c,Sales_Price__c,Total_Price__c,Quantity__c, Diag_1__r.Name, Diag_2__r.Name, Diag_3__r.Name, Diag_4__r.Name, Diag_5__r.Name, Diag_6__r.Name from
                                                                                     Claim_Lines__r),
@@ -216,7 +216,7 @@ public class MiddlewareUtilsTest {
     }
     @isTest
     public static void submitClaimToMiddlewareTest(){
-        List<Claim__c> claims = [Select Id,Submitter_Id__c,Name,Referring_Provider_Type__c,Referring_Provider_Name__c,Referring_Provider_First_Name__c,Referring_Provider_Address_Street__c,Referring_Provider_Address_City__c,Referring_Provider_Address_State__c,Referring_Provider_Address_Zip_Code__c,Referring_Provider_Phone__c,Referring_Provider_Taxonomy_code__c,Referring_Provider_NPI__c,CASESAFEID__c,Patient_Condition_Related_to_auto_state__c,
+        List<Claim__c> claims = [Select Id,CreatedDate,Submitter_Id__c,Name,Referring_Provider_Type__c,Referring_Provider_Name__c,Referring_Provider_First_Name__c,Referring_Provider_Address_Street__c,Referring_Provider_Address_City__c,Referring_Provider_Address_State__c,Referring_Provider_Address_Zip_Code__c,Referring_Provider_Phone__c,Referring_Provider_Taxonomy_code__c,Referring_Provider_NPI__c,CASESAFEID__c,Patient_Condition_Related_to_auto_state__c,
         Innovalan_Reference_Id__c,Casualty__c,X16_Unable_to_work_from__c,Accept_Assignment__c,(Select Id, Claim__r.Rendering_Provider_Type__c,Claim__r.Rendering_Provider_Name__c,Rendering_Provider_ID_TaxonomyCode__c,Rendering_Provider_ID_NPI__c,Diag_1__c,Diag_2__c,Diag_3__c,Diag_4__c,Diag_5__c,Diag_6__c,
             Diagnosis_pointers__c,Modifier_s__c,Date_from_of_Service__c,Date_to_of_Service__c,Place_of_Service__c,CPT_HCPCS__c,Sales_Price__c,Total_Price__c,Quantity__c,  Diag_1__r.Name, Diag_2__r.Name, Diag_3__r.Name, Diag_4__r.Name, Diag_5__r.Name, Diag_6__r.Name from
                                                                                     Claim_Lines__r),

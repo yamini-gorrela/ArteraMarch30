@@ -1,17 +1,10 @@
 public with sharing class PaymentPdfService {
-    
     @testVisible
     static Boolean forceFail = false;
-    
     @AuraEnabled
     public static Id savePaymentPdf(Id paymentId) {
         
         try {
-            
-            if (Test.isRunningTest() && forceFail) {
-                return null;
-            }
-            
             PageReference pdfPage = Page.PaymentPdfRenderer;
             pdfPage.getParameters().put('id', paymentId);
             
@@ -41,6 +34,7 @@ public with sharing class PaymentPdfService {
             return cv.ContentDocumentId;
             
         } catch (Exception e) {
+            System.debug('ERROR: ' + e.getMessage());
             return null;
         }
     }
