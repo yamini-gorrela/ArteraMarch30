@@ -23,6 +23,7 @@ public virtual class MiddlewareSchema {
 
     Public Class ClaimForm{
         public String claim_id;	//A123485
+        public Date date_created;
         public String submitter_code;
 		public Id sfid;
 		public ClaimDates claim_dates;

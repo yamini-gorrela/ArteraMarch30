@@ -1,10 +1,11 @@
 <apex:page controller="PaymentPrintController"
            renderAs="pdf"
            showHeader="false"
-           sidebar="false"
-           applyHtmlTag="false"
-           applyBodyTag="false">
-    
+           sidebar="false">
+
+    <style>
+    </style>
+
     <apex:outputText value="{!htmlContent}" escape="false"/>
     
 </apex:page>

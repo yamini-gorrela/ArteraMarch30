@@ -287,6 +287,7 @@ public class MiddlewareUtils extends MiddlewareSchema{
         
         ClaimForm oClaims= new ClaimForm();
         oClaims.Claim_id=claim.Name;
+        oClaims.date_created = claim.CreatedDate.date();
         oClaims.submitter_code=claim.Submitter_Id__c;
         oClaims.sfid=claim.Id;
         oClaims.claim_dates=oClaimdates;
